@@ -404,7 +404,7 @@ DMA_INIT_RESULT audioflow_init_sport_dma(SPORT_DMA_CONFIG *sport_dma_cfg) {
             *pREG_SPORT4_CTL_B  = sport_dma_cfg->pREG_SPORT_CTL_B;
             *pREG_SPORT4_MCTL_B = sport_dma_cfg->pREG_SPORT_MCTL_B;
             *pREG_SPORT4_CS0_B  = sport_dma_cfg->pREG_SPORT_CS0_B;
-            *pREG_SPORT4_DIV_B  = sport_dma_cfg->pREG_SPORT_DIV_B
+            *pREG_SPORT4_DIV_B  = sport_dma_cfg->pREG_SPORT_DIV_B;
 
             if (sport_dma_cfg->generates_interrupts) {
                 // Set up interrupt handler for SPORT RX
