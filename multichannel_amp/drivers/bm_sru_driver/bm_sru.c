@@ -235,6 +235,28 @@ bool sru_config_spdif(uint8_t clock_divider) {
 }
 
 /**
+ * @brief      Configuration: Merus Audio MA12040P is slave
+ *
+ * Basic setup for 2 channel audio being streamed to the the MA12040P. The SHARC acts
+ * as the master device and the MA12040P is the slave.
+ *
+ */
+void sru_config_sharc_sam_ma12040p_slave(void) {
+
+    // Initialize standard SRU/DAI settings on SHARC Audio Module board
+    sru_init_sharc_sam();
+
+    SRU2(HIGH, DAI1_PBEN01_I);        	// MA12040P CLK = output
+    SRU2(HIGH, DAI1_PBEN02_I);        	// MA12040P FS = output
+    SRU2(HIGH, DAI1_PBEN11_I);        	// MA12040P DATA = output
+
+    /* configuration for the MA12040P and monitoring the signals */
+    SRU2(SPT4_ACLK_O, DAI1_PB01_I);     // route SPORT4A CLK output to MA12040P CLK input
+    SRU2(SPT4_AFS_O, DAI1_PB02_I);     // route SPORT4A FS output to MA12040P FS input
+    SRU2(SPT4_AD0_O,  DAI1_PB03_I);    // SPT4A AD0 output to MA12040P Data pin
+}
+
+/**
  * @brief      Configuration: ADAU1761 is I2S master (generates system audio clocks)
  *
  * This is the basic, stand-alone audio configuration for the SHARC Audio Module board where

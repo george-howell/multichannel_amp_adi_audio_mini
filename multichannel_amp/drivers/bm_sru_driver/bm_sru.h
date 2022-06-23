@@ -64,4 +64,11 @@ void sru_config_sharc_sam_adau1452_master(void);
  */
 bool sru_config_spdif(uint8_t clock_divider);
 
+/*
+ * Basic setup for 2 channel audio being streamed to the the MA12040P. The SHARC acts
+ * as the master device and the MA12040P is the slave.
+ *
+ */
+void sru_config_sharc_sam_ma12040p_slave(void);
+
 #endif //_BM_SRU_H
