@@ -55,10 +55,12 @@ void audioframework_dma_handler(uint32_t iid, void *arg);
 void audioframework_audiocallback_handler(uint32_t iid);
 
 // Definitions for this specific framework
-#define     AUDIO_CHANNELS             (8)
-#define     AUDIO_CHANNELS_MASK        (0xFF)
-#define     SPDIF_DMA_CHANNELS         (2)
-#define     SPDIF_DMA_CHANNEL_MASK     (0x3)
+#define     AUDIO_CHANNELS             		(8)
+#define     AUDIO_CHANNELS_MASK        		(0xFF)
+#define     SPDIF_DMA_CHANNELS         		(2)
+#define     SPDIF_DMA_CHANNEL_MASK     		(0x3)
+#define     MA12040P_AUDIO_CHANNELS     	(2)
+#define     MA12040P_AUDIO_CHANNELS_MASK   	(0xFF)
 
 // ADAU1761 Fixed-point (raw ADC/DAC data) DMA buffers for ping-pong / double-buffered DMA
 #pragma alignment_region(64)
@@ -104,6 +106,8 @@ float a2b_audiochannels_in[AUDIO_CHANNELS * AUDIO_BLOCK_SIZE] = {0};         // 
 float spdif_audiochannels_out[SPDIF_DMA_CHANNELS * AUDIO_BLOCK_SIZE] = {0};    // Audio to SPDIF TX
 float spdif_audiochannels_in[SPDIF_DMA_CHANNELS * AUDIO_BLOCK_SIZE] = {0};      // Audio from SPDIF RX
 
+float ma12040p_audiochannels_out[MA12040P_AUDIO_CHANNELS * AUDIO_BLOCK_SIZE] = {0};    // Audio to MA12040P
+
 #if (USE_BOTH_CORES_TO_PROCESS_AUDIO)
 float audiochannels_from_sharc_core2[AUDIO_CHANNELS * AUDIO_BLOCK_SIZE] = {0};      // Audio from SHARC Core 2
 float audiochannels_to_sharc_core2[AUDIO_CHANNELS * AUDIO_BLOCK_SIZE] = {0};          // Audio from SHARC Core 2
@@ -147,6 +151,10 @@ float *audiochannel_spdif_0_right_in = spdif_audiochannels_in + AUDIO_BLOCK_SIZE
 // SPDIF digital audio out buffers
 float *audiochannel_spdif_0_left_out  = spdif_audiochannels_out + AUDIO_BLOCK_SIZE * 0;
 float *audiochannel_spdif_0_right_out = spdif_audiochannels_out + AUDIO_BLOCK_SIZE * 1;
+
+// MA12040P Outputs
+float *audiochannel_ma12040p_0_left_out  = ma12040p_audiochannels_out + AUDIO_BLOCK_SIZE * 0;
+float *audiochannel_ma12040p_0_right_out = ma12040p_audiochannels_out + AUDIO_BLOCK_SIZE * 1;
 
 // A2B Audio In (from the A2B bus)
 float *audiochannel_a2b_0_left_in  = a2b_audiochannels_in + AUDIO_BLOCK_SIZE * 0;

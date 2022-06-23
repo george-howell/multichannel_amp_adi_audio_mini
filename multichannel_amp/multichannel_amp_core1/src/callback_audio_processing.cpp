@@ -390,6 +390,10 @@ void processaudio_output_routing(void) {
 				audiochannel_from_sharc_core2_0_left[i];
 		audiochannel_spdif_0_right_out[i] =
 				audiochannel_from_sharc_core2_0_right[i];
+
+		// Send audio to from SHARC Core 2 to the Merus Audio MA12040P
+		audiochannel_ma12040p_0_left_out[i] = audiochannel_from_sharc_core2_0_left[i];
+		audiochannel_ma12040p_0_right_out[i] = audiochannel_from_sharc_core2_0_right[i];
 #endif
 	}
 }
