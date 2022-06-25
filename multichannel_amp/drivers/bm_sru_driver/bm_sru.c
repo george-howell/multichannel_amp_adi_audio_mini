@@ -258,7 +258,7 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
 
     // enable physical input / output pins
     SRU(LOW, DAI0_PBEN06_I);        	// 12.288 MHz Clock = input
-    SRU(HIGH, DAI0_PBEN17_I);			// MA12040P MCLK = output
+    SRU2(HIGH, DAI1_PBEN17_I);			// MA12040P MCLK = output
 
     // configure PCGB register for MA12040P MCLK output
 	*pREG_PCG0_CTLB0 = BITM_PCG_CTLB0_CLKEN; 		// enable clk
@@ -268,7 +268,7 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
 
 	// route signals in SRU
     SRU(DAI0_PB06_O,  PCG0_EXTCLKB_I);    // DAIO Pin16 output to PCG external clock input
-    SRU(PCG0_CLKB_O,  DAI0_PB17_I);		  // PCG0 CLKB output to DAI0 Pin 17 input
+	SRU2(PCG0_CRS_CLKB_O,  DAI1_PB17_I);  // PCG0 CLKB cross domain output to DAI1 Pin 17 input
 }
 
 /**
