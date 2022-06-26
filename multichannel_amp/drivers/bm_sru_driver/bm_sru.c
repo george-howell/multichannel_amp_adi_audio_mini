@@ -246,36 +246,42 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
     // Initialize standard SRU/DAI settings on SHARC Audio Module board
     sru_init_sharc_sam();
 
-//    // enable physical input / output pins
-//    SRU2(HIGH, DAI1_PBEN01_I);        	// MA12040P CLK = output
-//    SRU2(HIGH, DAI1_PBEN02_I);        	// MA12040P FS = output
-//    SRU2(HIGH, DAI1_PBEN03_I);        	// MA12040P DATA = output
-//
-//    /* configuration for the MA12040P and monitoring the signals */
-//    SRU2(SPT4_ACLK_O, DAI1_PB01_I);     // route SPORT4A CLK output to MA12040P CLK input
-//    SRU2(SPT4_AFS_O, DAI1_PB02_I);     // route SPORT4A FS output to MA12040P FS input
-//    SRU2(SPT4_AD0_O,  DAI1_PB03_I);    // SPT4A AD0 output to MA12040P Data pin
-
     // enable physical input / output pins
-    SRU(LOW, DAI0_PBEN06_I);        	// 12.288 MHz Clock = input
-    SRU(HIGH, DAI0_PBEN17_I);			// MA12040P MCLK = output
-    SRU2(HIGH, DAI1_PBEN17_I);			// MA12040P SCL = output
-    SRU2(HIGH, DAI1_PBEN18_I);			// MA12040P WS = output
+	SRU(LOW, DAI0_PBEN06_I);        	// 12.288 MHz Clock = input
+	SRU(HIGH, DAI0_PBEN17_I);			// MA12040P MCLK = output
+	SRU2(HIGH, DAI1_PBEN17_I);			// MA12040P SCK = output
+	SRU2(HIGH, DAI1_PBEN18_I);			// MA12040P WS = output
+    SRU2(HIGH, DAI1_PBEN19_I);        	// MA12040P DATA = output
 
-    // configure PCGB register for MA12040P MCLK output
-    *pREG_PCG0_CTLB1 = BITM_PCG_CTLB1_CLKSRC |      // clk source is from PCG0_EXTCLKB_I
-    					   BITM_PCG_CTLB1_FSSRC |		// fs source is from PCG0_EXTCLKB_I
-    					   4 |							// clk division
-    					   0;
-	*pREG_PCG0_CTLB0 = BITM_PCG_CTLB0_CLKEN |		// enable clk
-					   BITM_PCG_CTLB0_FSEN |		// enable fs
-					   256; 						// fs division
+    // configure PCGB register for MA12040P SCL and FS output
+    *pREG_PCG0_SYNC2 = BITM_PCG_SYNC2_FSC |    		// enable external FS synchronisation
+                       BITM_PCG_SYNC2_CLKC |     	// enable external CLK synchronisation
+                       0;
 
-	// route signals in SRU
-    SRU(DAI0_PB06_O,  PCG0_EXTCLKB_I);    	// 12.288 MHz output to PCG B external clock input
-    SRU(DAI0_PB06_O,  DAI0_PB17_I);    		// 12.288 MHz output to MA12040P MCLK input
-	SRU2(PCG0_CRS_CLKB_O,  DAI1_PB17_I);  	// PCG0 CLKB cross domain output to MA12040P SCK
-	SRU2(PCG0_CRS_FSB_O,  DAI1_PB18_I);  	// PCG0 CLKB cross domain output to MA12040P WS
+    *pREG_PCG0_CTLC1 = BITM_PCG_CTLC1_CLKSRC |      // clock source is from PCG0_EXTCLKB_I
+					   BITM_PCG_CTLC1_FSSRC |		// frame sync source is from PCG0_EXTCLKB_I
+					   4 |							// clock division
+					   0;
+	*pREG_PCG0_CTLC0 = BITM_PCG_CTLC0_CLKEN |		// enable clock
+					   BITM_PCG_CTLC0_FSEN |		// enable frame sync
+					   256; 						// frame sync division
+
+	// route adau1761 bclk and fs signals to PCGC
+	SRU2(DAI1_CRS_PB03_O, PCG0_EXTCLKC_I);
+	SRU2(DAI1_CRS_PB04_O, PCG0_SYNC_CLKC_I);
+
+    // route 12.288MHz external clock signal to MA12040P MCLK
+	SRU(DAI0_PB06_O,  DAI0_PB17_I);    		// 12.288 MHz output to MA12040P MCLK input
+
+    // route PCGC clock and frame sync signals to SPORT4
+    SRU2(PCG0_CLKC_O, SPT4_ACLK_I);			// route PCG0 CLKC cross domain output to SPORT4 CLK input
+    SRU2(PCG0_FSC_O, SPT4_AFS_I);  			// route PCG0 FSC cross domain output to SPORT4 FS input
+
+    // route PCGC clock and frame sync signals to MA12040P SCK and WS, and route SPORT4 data to MA12040P DATA
+    SRU2(PCG0_CLKC_O, DAI1_PB17_I);  		// route PCG0 CLKC cross domain output to MA12040P SCK
+    SRU2(PCG0_FSC_O, DAI1_PB18_I);  		// route PCG0 FSC cross domain output to MA12040P WS
+    SRU2(SPT4_AD0_O, DAI1_PB19_I);    		// route SPT4A AD0 output to MA12040P Data pin
+
 }
 
 /**

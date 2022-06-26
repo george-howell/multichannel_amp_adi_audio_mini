@@ -272,38 +272,24 @@ SPORT_DMA_CONFIG SPR4_MA12040P_2CH_Config = {
      // SPORT A Transmit
     .pREG_SPORT_CTL_A    	= BITM_SPORT_CTL_A_LSBF |		// LSB first
 							  BITM_SPORT_CTL_A_SLEN |		// 32-bit data word
-							  BITM_SPORT_CTL_A_ICLK |		// internal clock
     						  BITM_SPORT_CTL_A_OPMODE |   	// I2S mode
-							  BITM_SPORT_CTL_A_IFS | 		// internal frame sync
 							  BITM_SPORT_CTL_A_LAFS |		// left-justified mode
 							  BITM_SPORT_CTL_A_SPTRAN |     // SPORT is transmitter
 							  0,
-
-	.pREG_SPORT_DIV_A 		= 0x24 |			// 0x11
-							  (0x1f << 16) |
-							  0,
-
 
     .pREG_SPORT_MCTL_A  	= 0,
 
     // SPORT B Receive
 	.pREG_SPORT_CTL_B    	= BITM_SPORT_CTL_B_LSBF |		// LSB first
 							  BITM_SPORT_CTL_B_SLEN |		// 32-bit data word
-							  BITM_SPORT_CTL_B_ICLK |		// internal clock
 							  BITM_SPORT_CTL_B_OPMODE |   	// I2S mode
-							  BITM_SPORT_CTL_B_IFS | 		// internal frame sync
 							  BITM_SPORT_CTL_B_LAFS |		// left-justified mode
 							  BITM_SPORT_CTL_B_SPTRAN |     // SPORT is transmitter
 							  0,
 
-	.pREG_SPORT_DIV_B 		= 0x24 |
-							  (0x1f << 16) |
-							  0,
+    .pREG_SPORT_MCTL_B  	= 0,
 
-    .pREG_SPORT_MCTL_B  = 0,
-
-    .generates_interrupts = false,
-    .dma_interrupt_routine = audioframework_dma_handler
+    .generates_interrupts 	= false,
 };
 
 // DMA & SPORT Configuration for SPORT 0 (ADAU1761 connection)
