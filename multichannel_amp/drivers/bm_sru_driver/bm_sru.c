@@ -261,7 +261,8 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
     *pREG_PCG0_CTLC1 = BITM_PCG_CTLC1_CLKSRC |      // clock source is from PCG0_EXTCLKB_I
 					   BITM_PCG_CTLC1_FSSRC |		// frame sync source is from PCG0_EXTCLKB_I
 					   4 |							// clock division
-					   0;
+					   (0x2 << BITP_PCG_CTLC1_FSPHASELO);
+
 	*pREG_PCG0_CTLC0 = BITM_PCG_CTLC0_CLKEN |		// enable clock
 					   BITM_PCG_CTLC0_FSEN |		// enable frame sync
 					   256; 						// frame sync division
