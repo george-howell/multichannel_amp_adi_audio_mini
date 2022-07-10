@@ -100,6 +100,10 @@ int main(int argc, const char *argv[]) {
                                UART_SERIAL_8N1,
                                UART_SAM_DEVICE_FTDI);
 
+//    event_logging_connect_uart(UART_BAUD_RATE_115200,
+//							   UART_SERIAL_8N1,
+//							   UART1);
+
     // Set a callback for our fatal and error messages
     event_logging_set_error_callback(event_logging_error_callback);
 
