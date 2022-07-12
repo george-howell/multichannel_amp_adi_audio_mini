@@ -46,6 +46,7 @@
 
 // Drivers for ADAU / SigmaDSP Converters
 #include "drivers/bm_ma12040p_driver/bm_ma12040p_device.h"
+#include "audio_framework_multichannel_amp.h"
 
 // Drivers for quick configuration of the SRU on the SHARC Audio Module board
 #include "drivers/bm_sru_driver/bm_sru.h"
@@ -80,13 +81,6 @@
 
 // Instance of our ADAU1761 driver for the ADAU1761 on this SHARC Audio Module board
 BM_ADAU_DEVICE adau1761_local;
-
-// MA12040P configuration
-BM_MA12040P_CONFIG MA12040P_Config =
-{
-	.device_num = TWI2,
-	.i2c_address = MA12040P_DEVADDR_1
-};
 
 // Driver for the A2B controller on the SHARC Audio Module board
 BM_AD2425W_CONTROLLER ad2425w;
@@ -278,12 +272,11 @@ void audioframework_initialize(void) {
     // Configure SPDIF to connect to SPORT2.  Divide the fs
     sru_config_spdif(4);
 
+    /*
+     * Set up the multichannel amp interface
+     */
     sru_config_sharc_sam_ma12040p_slave();
-
-    /* Configuring the MA12040P */
-    ma12040p_init(&MA12040P_Config);
-    uint8_t regValue[1] = {0};
-    ma12040p_read_reg(&MA12040P_Config, 0x00, regValue);
+    amp_initialise();
 
     log_event(EVENT_INFO, "Configuring the ADAU1761");
     // Initialize the ADAU1761 which is connected to TWI0 as a master
