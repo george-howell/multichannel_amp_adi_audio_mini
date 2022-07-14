@@ -20,11 +20,11 @@ extern "C" {
 #include "stdint.h"
 #include "drivers/bm_twi_driver/bm_twi.h"
 #include "drivers/bm_event_logging_driver/bm_event_logging.h"
-#include "bm_ma12040p_device.h"
+#include "drivers/bm_ma12040p_driver/bm_ma12040p_device.h"
 
 /*------------------- MACROS AND DEFINES -------------------------*/
 
-#define AF_I2C_MUX_DEV_ADDR			((uint8_t)0xE0)
+#define AF_I2C_MUX_DEV_ADDR			((uint8_t)0x70)
 #define AF_I2C_SPEED				100000
 
 
@@ -35,13 +35,6 @@ typedef enum
 	AF_MULTIAMPS_SUCCESS,
 	AF_MULTIAMPS_ERROR
 } AF_MULTIAMPS_STATUS;
-
-typedef struct
-{
-	BM_TWI twi;         	// Simple instance of TWI driver
-	BM_TWI_PERIPHERAL_NUMBER device_num;
-	uint8_t i2c_address;
-} AF_MULTIAMPS_I2C_CONFIG;
 
 /*------------------- EXPORTED VARIABLES -------------------------*/
 /*------------------- GLOBAL FUNCTION PROTOTYPES -----------------*/

@@ -305,9 +305,6 @@
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="arm.toolchain.bare.target.exe.release.67501594;arm.toolchain.bare.target.exe.release.67501594.;arm.toolchain.bare.cpp.compiler.1466076106;arm.toolchain.bare.cpp.input.698167995">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="arm.toolchain.bare.target.exe.debug.1455532627;arm.toolchain.bare.target.exe.debug.1455532627.;arm.toolchain.bare.cpp.compiler.1947926561;arm.toolchain.bare.cpp.input.824563843">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
@@ -315,6 +312,9 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="arm.toolchain.bare.target.exe.release.67501594;arm.toolchain.bare.target.exe.release.67501594.;arm.toolchain.bare.c.compiler.498120950;arm.toolchain.bare.c.input.466469425">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="arm.toolchain.bare.target.exe.release.67501594;arm.toolchain.bare.target.exe.release.67501594.;arm.toolchain.bare.cpp.compiler.1466076106;arm.toolchain.bare.cpp.input.698167995">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>

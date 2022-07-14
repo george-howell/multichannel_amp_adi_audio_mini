@@ -16,19 +16,16 @@
 /*------------------- PRIVATE MACROS AND DEFINES -----------------*/
 /*------------------- PRIVATE TYPEDEFS ---------------------------*/
 /*------------------- STATIC VARIABLES ---------------------------*/
-
-// I2C configuration
-static AF_MULTIAMPS_I2C_CONFIG I2C_Config =
-{
-	.device_num = TWI2,
-	.i2c_address = AF_I2C_MUX_DEV_ADDR
-};
-
 /*------------------- GLOBAL VARIABLES ---------------------------*/
+
+BM_TWI twi;
+uint16_t ma12040pDevMap;
+
 /*------------------- STATIC FUNCTION PROTOTYPES -----------------*/
 /*------------------- STATIC FUNCTIONS ---------------------------*/
 
-static AF_MULTIAMPS_STATUS i2c_init(AF_MULTIAMPS_I2C_CONFIG *i2c_config);
+static AF_MULTIAMPS_STATUS i2c_init(BM_TWI *twi, BM_TWI_PERIPHERAL_NUMBER deviceNum, uint8_t devAddr);
+static AF_MULTIAMPS_STATUS ma12040p_devices_on_bus(BM_TWI *twi, uint8_t i2cMuxBus);
 
 /*------------------- GLOBAL FUNCTIONS ---------------------------*/
 
@@ -44,7 +41,7 @@ AF_MULTIAMPS_STATUS amp_initialise(void)
 	char message[128];
 
 	// set the I2C port with the device address of the I2C mux
-	if (i2c_init(&I2C_Config) != AF_MULTIAMPS_SUCCESS)
+	if (i2c_init(&twi, TWI2, AF_I2C_MUX_DEV_ADDR) != AF_MULTIAMPS_SUCCESS)
 	{
 		log_event(EVENT_INFO, "I2C Setup Failure");
 	} else
@@ -52,25 +49,19 @@ AF_MULTIAMPS_STATUS amp_initialise(void)
 		log_event(EVENT_INFO, "I2C Setup Success");
 	}
 	sprintf(message, "I2C Config, Bus: %d, Addr: 0x%.2x, Speed: %'.3f KHz",
-			I2C_Config.device_num, I2C_Config.i2c_address, (double)AF_I2C_SPEED / 1000.0);
+			TWI2, AF_I2C_MUX_DEV_ADDR, (double)AF_I2C_SPEED / 1000.0);
 	log_event(EVENT_INFO, message);
 
-	// set the I2C mux to bus 0
-	if (TWI_SIMPLE_TIMEOUT == twi_write_block(&I2C_Config->twi, 0x01, 1))
+	// check i2c mux busses for ma12040p devices present
+	uint8_t i2cMuxBus = 0;
+	ma12040p_devices_on_bus(&twi, i2cMuxBus);
+	i2cMuxBus = 1;
+	ma12040p_devices_on_bus(&twi, i2cMuxBus);
+
+	if (ma12040pDevMap==0)
 	{
-		return AF_MULTIAMPS_ERROR;
+		log_event(EVENT_INFO, "No MA12040P devices connected.");
 	}
-
-	// check if MA12040P devices are detected
-	twi_set_temporary_address(&I2C_Config->twi, MA12040P_DEVADDR_1);
-	BM_MA12040P_CONFIG *ma12040p_config = I2C_Config
-	BM_MA12040P_RESULT ma12040p_read_reg(BM_MA12040P_CONFIG *ma12040p_config,
-									      uint8_t reg_addr,
-										  uint8_t *reg_value);
-
-	// set the I2C mux to bus 1
-
-	// check if MA12040P devices are detected
 
 	return AF_MULTIAMPS_SUCCESS;
 }
@@ -82,13 +73,56 @@ AF_MULTIAMPS_STATUS amp_initialise(void)
  *
  * @return  framework status
  */
-static AF_MULTIAMPS_STATUS i2c_init(AF_MULTIAMPS_I2C_CONFIG *i2c_config)
+static AF_MULTIAMPS_STATUS i2c_init(BM_TWI *twi, BM_TWI_PERIPHERAL_NUMBER deviceNum, uint8_t devAddr)
 {
-	if (twi_initialize(&i2c_config->twi, i2c_config->i2c_address, TWI_TYPICAL_SCLK0_FREQ, i2c_config->device_num) != TWI_SIMPLE_SUCCESS)
+	if (twi_initialize(twi, devAddr, TWI_TYPICAL_SCLK0_FREQ, deviceNum) != TWI_SIMPLE_SUCCESS)
 	{
 		return AF_MULTIAMPS_ERROR;
 	}
-	twi_set_clock(&i2c_config->twi, AF_I2C_SPEED);
+	twi_set_clock(twi, AF_I2C_SPEED);
+
+	return AF_MULTIAMPS_SUCCESS;
+}
+
+/**
+ * @brief Checks the I2C bus for MA12040P devices
+ *
+ * @param   i2cMuxBus  i2c mux bus number, from 0-7
+ *
+ * @return  MA12040P status
+ */
+static AF_MULTIAMPS_STATUS ma12040p_devices_on_bus(BM_TWI *twi, uint8_t i2cMuxBus)
+{
+	char message[128];
+
+	uint8_t i2cMuxBusRegVal = (1<<i2cMuxBus);
+
+	// create function to check ma12040p devices on bus
+	if (twi_write_block(twi, &i2cMuxBusRegVal, 1) != TWI_SIMPLE_SUCCESS)
+	{
+		return AF_MULTIAMPS_ERROR;
+	}
+
+	// check if MA12040P devices are detected
+	uint8_t devAddrIdx;
+	uint8_t regVal = 0;
+	uint8_t devMapShift = 8*i2cMuxBus;
+	for (devAddrIdx = 0; devAddrIdx<4; devAddrIdx++)
+	{
+		// set i2c address to that of one of the 4 possible ma12040p addresses
+		twi_set_temporary_address(twi, MA12040P_DEVADDR_1+devAddrIdx);
+
+		// read one register to confirm if device present
+		if (ma12040p_read_reg(twi, 0x00, &regVal) == MA12040P_SUCCESS)
+		{
+			ma12040pDevMap |= (1<<(devAddrIdx+devMapShift));
+
+			sprintf(message, "MA12040P found on I2C mux bus %d with device address of 0x%.2x", i2cMuxBus, MA12040P_DEVADDR_1+devAddrIdx);
+			log_event(EVENT_INFO, message);
+		}
+	}
+
+	twi_restore_address(twi);
 
 	return AF_MULTIAMPS_SUCCESS;
 }
