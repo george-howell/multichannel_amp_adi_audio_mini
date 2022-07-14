@@ -246,6 +246,10 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
     // Initialize standard SRU/DAI settings on SHARC Audio Module board
     sru_init_sharc_sam();
 
+    // enable the i2c mux by setting the i2c mux rst line to hig
+    SRU(HIGH, DAI0_PBEN18_I);
+    SRU(HIGH, DAI0_PB18_I);
+
     // enable physical input / output pins
 	SRU(LOW, DAI0_PBEN06_I);        	// 12.288 MHz Clock = input
 	SRU(HIGH, DAI0_PBEN17_I);			// MA12040P MCLK = output
