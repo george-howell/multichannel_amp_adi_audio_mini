@@ -29,24 +29,11 @@ typedef enum
 	MA12040P_ERROR
 } BM_MA12040P_RESULT;
 
-typedef struct
-{
-	BM_TWI twi;         	// Simple instance of TWI driver
-	BM_TWI_PERIPHERAL_NUMBER device_num;
-	uint8_t i2c_address;
-
-} BM_MA12040P_CONFIG;
-
 /*------------------- EXPORTED VARIABLES -------------------------*/
 /*------------------- GLOBAL FUNCTION PROTOTYPES -----------------*/
 
-BM_MA12040P_RESULT ma12040p_init(BM_MA12040P_CONFIG *ma12040p_config);
-BM_MA12040P_RESULT ma12040p_write_reg(BM_MA12040P_CONFIG *ma12040p_config,
-								      uint8_t reg_addr,
-									  uint8_t reg_value);
-BM_MA12040P_RESULT ma12040p_read_reg(BM_MA12040P_CONFIG *ma12040p_config,
-								      uint8_t reg_addr,
-									  uint8_t *reg_value);
+BM_MA12040P_RESULT ma12040p_write_reg(BM_TWI *twi, uint8_t reg_addr, uint8_t reg_value);
+BM_MA12040P_RESULT ma12040p_read_reg(BM_TWI *twi, uint8_t reg_addr, uint8_t *reg_value);
 
 #ifdef __cplusplus
 }
