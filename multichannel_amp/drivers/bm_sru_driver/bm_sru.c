@@ -246,16 +246,24 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
     // Initialize standard SRU/DAI settings on SHARC Audio Module board
     sru_init_sharc_sam();
 
-    // enable the i2c mux by setting the i2c mux rst line to hig
+    // mute the ma12040p
+	SRU2(HIGH, DAI1_PBEN05_I); 	// set pin as output
+	SRU2(HIGH, DAI1_PB05_I);	// pull pin high
+
+    // enable the ma12040p
+    SRU2(HIGH, DAI1_PBEN04_I); 	// set pin as output
+	SRU2(LOW, DAI1_PB04_I);		// pull pin low
+
+    // enable the i2c mux by setting the i2c mux rst line to high
     SRU(HIGH, DAI0_PBEN18_I);
     SRU(HIGH, DAI0_PB18_I);
 
     // enable physical input / output pins
 	SRU(LOW, DAI0_PBEN06_I);        	// 12.288 MHz Clock = input
 	SRU(HIGH, DAI0_PBEN17_I);			// MA12040P MCLK = output
-	SRU2(HIGH, DAI1_PBEN17_I);			// MA12040P SCK = output
-	SRU2(HIGH, DAI1_PBEN18_I);			// MA12040P WS = output
-    SRU2(HIGH, DAI1_PBEN19_I);        	// MA12040P DATA = output
+	SRU2(HIGH, DAI1_PBEN01_I);			// MA12040P SCK = output
+	SRU2(HIGH, DAI1_PBEN02_I);			// MA12040P WS = output
+    SRU2(HIGH, DAI1_PBEN11_I);        	// MA12040P DATA = output
 
     // configure PCGB register for MA12040P SCL and FS output
     *pREG_PCG0_SYNC2 = BITM_PCG_SYNC2_FSC |    		// enable external FS synchronisation
@@ -283,9 +291,9 @@ void sru_config_sharc_sam_ma12040p_slave(void) {
     SRU2(PCG0_FSC_O, SPT4_AFS_I);  			// route PCG0 FSC cross domain output to SPORT4 FS input
 
     // route PCGC clock and frame sync signals to MA12040P SCK and WS, and route SPORT4 data to MA12040P DATA
-    SRU2(PCG0_CLKC_O, DAI1_PB17_I);  		// route PCG0 CLKC cross domain output to MA12040P SCK
-    SRU2(PCG0_FSC_O, DAI1_PB18_I);  		// route PCG0 FSC cross domain output to MA12040P WS
-    SRU2(SPT4_AD0_O, DAI1_PB19_I);    		// route SPT4A AD0 output to MA12040P Data pin
+    SRU2(PCG0_CLKC_O, DAI1_PB01_I);  		// route PCG0 CLKC cross domain output to MA12040P SCK
+    SRU2(PCG0_FSC_O, DAI1_PB02_I);  		// route PCG0 FSC cross domain output to MA12040P WS
+    SRU2(SPT4_AD0_O, DAI1_PB11_I);    		// route SPT4A AD0 output to MA12040P Data pin
 
 }
 

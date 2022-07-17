@@ -239,10 +239,10 @@ BM_TWI_RESULT twi_write_r(BM_TWI *device,
     (*device->pREG_TWI_ISTAT) |= BITM_TWI_ISTAT_MCOMP;
 
     // check for either address NAK or data NAK
-    if ((*device->pREG_TWI_MSTRSTAT && 0x0C) != 0)
-	{
-		return TWI_SIMPLE_ANAK_ERROR;
-	}
+//    if ((*device->pREG_TWI_MSTRSTAT && 0x0C) != 0)
+//	{
+//		return TWI_SIMPLE_ANAK_ERROR;
+//	}
 
     return TWI_SIMPLE_SUCCESS;
 }
@@ -393,6 +393,8 @@ BM_TWI_RESULT twi_read(BM_TWI *device,
     (*device->pREG_TWI_ISTAT) |= BITM_TWI_ISTAT_MCOMP;
 
     *value = (*device->pREG_TWI_RXDATA8);
+
+    *device->pREG_TWI_FIFOCTL |= (1<<1);
 
     return TWI_SIMPLE_SUCCESS;
 }

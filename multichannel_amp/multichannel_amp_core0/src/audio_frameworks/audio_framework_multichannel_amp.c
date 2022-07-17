@@ -53,10 +53,15 @@ AF_MULTIAMPS_STATUS amp_initialise(void)
 	log_event(EVENT_INFO, message);
 
 	// check i2c mux busses for ma12040p devices present
-	uint8_t i2cMuxBus = 0;
-	ma12040p_devices_on_bus(&twi, i2cMuxBus);
-	i2cMuxBus = 1;
-	ma12040p_devices_on_bus(&twi, i2cMuxBus);
+	uint8_t busIdx;
+	for (busIdx = 0; busIdx < 2; busIdx++)
+	{
+		if (ma12040p_devices_on_bus(&twi, busIdx) != AF_MULTIAMPS_SUCCESS)
+		{
+			sprintf(message, "Error checking devices on bus %d", busIdx);
+			log_event(EVENT_INFO, message);
+		}
+	}
 
 	if (ma12040pDevMap==0)
 	{
@@ -102,6 +107,15 @@ static AF_MULTIAMPS_STATUS ma12040p_devices_on_bus(BM_TWI *twi, uint8_t i2cMuxBu
 	{
 		return AF_MULTIAMPS_ERROR;
 	}
+	uint8_t reg_val;
+	if (twi_read(twi, &reg_val) != TWI_SIMPLE_SUCCESS)
+	{
+		return AF_MULTIAMPS_ERROR;
+	}
+	if (reg_val != i2cMuxBusRegVal)
+	{
+		return AF_MULTIAMPS_ERROR;
+	}
 
 	// check if MA12040P devices are detected
 	uint8_t devAddrIdx;
@@ -115,10 +129,15 @@ static AF_MULTIAMPS_STATUS ma12040p_devices_on_bus(BM_TWI *twi, uint8_t i2cMuxBu
 		// read one register to confirm if device present
 		if (ma12040p_read_reg(twi, 0x00, &regVal) == MA12040P_SUCCESS)
 		{
-			ma12040pDevMap |= (1<<(devAddrIdx+devMapShift));
+			if (regVal == 0x3d)
+			{
+				ma12040pDevMap |= (1<<(devAddrIdx+devMapShift));
 
-			sprintf(message, "MA12040P found on I2C mux bus %d with device address of 0x%.2x", i2cMuxBus, MA12040P_DEVADDR_1+devAddrIdx);
-			log_event(EVENT_INFO, message);
+				sprintf(message, "MA12040P found on I2C mux bus %d with device address of 0x%.2x", i2cMuxBus, MA12040P_DEVADDR_1+devAddrIdx);
+				log_event(EVENT_INFO, message);
+			}
+
+			regVal = 0x00;
 		}
 	}
 
